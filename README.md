@@ -34,11 +34,11 @@ RecurringJob extends the functionality of [Custom Jobs](https://github.com/colle
 within DelayedJob. It uses the job's queue field to identify each type of recurring job, and to ensure a single instance of each
 one is scheduled in the job queue at a time.
 
-To use RecurringJob, you need to create a custom job class and provide a perform method to do the work.
-I like to put job classes in a lib/jobs folder in my rails app, but you're free to put them anywhere you like.
+To use RecurringJob, you need to create a custom job class for each type of job you wish to schedule.
+I like to put job classes in a `lib/jobs` folder in my rails app, but you're free to put them anywhere you like.
 
-This example, which is similar to how we use RecurringJob at OnLive, shows how to subclass the RecurringJob class and provide a “perform” method that does the actual work.
-We can send in our own options (in this example an app_id for a database Model named App) and those will be passed on each
+This example, which is similar to how we use RecurringJob at OnLive, shows how to subclass the RecurringJob class and provide a `perform` method that does the actual work.
+We can send in our own options (in this example an `app_id` for a database Model named App) and those will be passed on each
 time when the job is scheduled.  In addition we are automatically passed in the job id of the DelayedJob job, which in this
 case we use for locking.
 
@@ -90,7 +90,7 @@ queue to run an hour after they finish (or whatever interval you choose), contin
 you can specify actions to happen when these jobs succeed, or fail, and they live in the DelayedJob queue between runs.
 (See more info about [DelayedJob hooks](https://github.com/collectiveidea/delayed_job#hooks)).
 
-Important: If you implement any of these hooks in your RecurringJob, you must call super to allow the RecurringJob hooks
+*Important:* If you implement any of the DelayedJob hooks (`before`, `after`, `success`, `error`, `failure`, or `enqueue`) in your RecurringJob, you must call super to allow the RecurringJob hooks
 to do its work!
 
 ## Contributing
