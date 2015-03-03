@@ -37,7 +37,7 @@ one is scheduled in the job queue at a time.
 To use RecurringJob, you need to create a custom job class and provide a perform method to do the work.
 I like to put job classes in a lib/jobs folder in my rails app, but you're free to put them anywhere you like.
 
-In this example, which is similar to how we use RecurringJob at OnLive, we show how to subclass the RecurringJob class and provide a “perform” method that does the actual work.
+This example, which is similar to how we use RecurringJob at OnLive, shows how to subclass the RecurringJob class and provide a “perform” method that does the actual work.
 We can send in our own options (in this example an app_id for a database Model named App) and those will be passed on each
 time when the job is scheduled.  In addition we are automatically passed in the job id of the DelayedJob job, which in this
 case we use for locking.
