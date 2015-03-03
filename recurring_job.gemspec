@@ -6,8 +6,8 @@ require 'recurring_job/version'
 Gem::Specification.new do |spec|
   spec.name          = "recurring_job"
   spec.version       = RecurringJob::VERSION
-  spec.authors       = ["Ruth Helfinstein"]
-  spec.email         = ["ruth.helfinstein@onlive.com"]
+  spec.authors       = ["Ruth Helfinstein", "Noah Gibbs"]
+  spec.email         = ["ruth.helfinstein@onlive.com", "noah@onlive.com"]
   spec.summary       = %q{Schedule DelayedJob tasks to repeat after a given interval.}
   spec.description   = <<DESC
 Recurring_job creates a framework for creating custom DelayedJob jobs

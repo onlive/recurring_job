@@ -106,3 +106,8 @@ to do its work!
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create a new Pull Request
+
+## License and Copying
+
+Recurring Job is released under the MIT License by OL2, Inc.
+Please see the file LICENSE.txt for a copy of this license.
