@@ -49,7 +49,7 @@ class AppStatusJob < RecurringJob
     # that will be passed on each time when the job is scheduled
 
   def perform
-    return if !options
+    return unless options
     app_id = options[:app_id]
     recurring_job_id = options[:delayed_job_id]
 
