@@ -70,18 +70,24 @@ class AppStatusJob < RecurringJob
   end
 
 end
+```
+We can run this job a single time to check a single app
 
-# we can run this job a single time to check a single app
-
+```ruby
 AppStatusJob.queue_once(app_id:App.first.id)
+```
 
-# or we can set it up to run as a scheduled job
+Or we can set it up to run as a scheduled job
+```ruby
 AppStatusJob.schedule_job(interval:1.hours)
+```
 
-# or we can set it up to run for each particular app on a schedule, using the (unique)
-# name of the app as the name of the queue
+Or we can set it up to run for each particular app on a schedule, using the (unique)
+name of the app as the name of the queue
+
+```ruby
 App.all.each do |app|
-  AppSyncJob.schedule_job(interval:12.hours, app_id:app.id, queue:app.name)
+  AppSyncJob.schedule_job(interval:2.hours, app_id:app.id, queue:app.name)
 end
 ```
 
