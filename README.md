@@ -77,9 +77,9 @@ We can run this job a single time to check a single app
 AppStatusJob.queue_once(app_id:App.first.id)
 ```
 
-Or we can set it up to run as a scheduled job
+Or we can set it up to run as a scheduled job to check all apps every hour
 ```ruby
-AppStatusJob.schedule_job(interval:1.hours)
+AppStatusJob.schedule_job(interval:1.hour)
 ```
 
 Or we can set it up to run for each particular app on a schedule, using the (unique)
@@ -87,7 +87,7 @@ name of the app as the name of the queue
 
 ```ruby
 App.all.each do |app|
-  AppSyncJob.schedule_job(interval:2.hours, app_id:app.id, queue:app.name)
+  AppSyncJob.schedule_job(interval:1.hour, app_id:app.id, queue:app.name)
 end
 ```
 
@@ -96,7 +96,7 @@ queue to run an hour after they finish (or whatever interval you choose), contin
 you can specify actions to happen when these jobs succeed, or fail, and they live in the DelayedJob queue between runs.
 (See more info about [DelayedJob hooks](https://github.com/collectiveidea/delayed_job#hooks)).
 
-*Important:* If you implement any of the DelayedJob hooks (`before`, `after`, `success`, `error`, `failure`, or `enqueue`) in your RecurringJob, you must call super to allow the RecurringJob hooks
+**Important:** If you implement any of the DelayedJob hooks (`before`, `after`, `success`, `error`, `failure`, or `enqueue`) in your RecurringJob, you must call super to allow the RecurringJob hooks
 to do its work!
 
 ## Contributing
