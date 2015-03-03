@@ -6,7 +6,6 @@ class RecurringJob < Struct.new(:options )
   # (parts inspired by https://gist.github.com/JoshMcKin/1648242)
 
   def self.logger=(new_logger)
-    puts "Setting logger to #{new_logger.inspect}"
     @@logger = new_logger
   end
 
@@ -23,14 +22,12 @@ class RecurringJob < Struct.new(:options )
     # schedule this job (if you just want job to run once, just use queue_once )
     # this_job is currently running instance (if any)(so we can check against it)
     # options -
-    #   :interval => num_seconds - how often to schedule the job
-    #               default, once a day
-    #               (time between job runs (from end of one to beginning of next)
+    #   :interval => number of seconds between job runs  (from end of one to beginning of next)
+    #                default, once a day
     #   :queue  => name of queue to use
     #              default: the name of this class
-    #              only one job can be scheduled at a time for any given queue
+    #              only one job will be scheduled at a time for any given queue
     #   :first_start_time => specify a specific time for this run, then use interval after that
-
     # Plus any other options (if any) you want sent through to the underlying job.
 
     options ||= {}  # in case sent in explicitly as nil
@@ -38,17 +35,16 @@ class RecurringJob < Struct.new(:options )
     options[:queue] ||= default_queue
 
     queue_name = options[:queue]
-
     other_job = next_scheduled_job(this_job, queue_name)
     if other_job
       logger.info "#{queue_name} job is already scheduled for #{other_job.run_at}."
       # Still set any new start time or interval options for next time.
       if job_interval(other_job) != options[:interval].to_i
-        logger.info "    Setting interval to #{options[:interval]}"
+        logger.info "    Updating interval to #{options[:interval]}"
         set_job_interval(other_job, options[:interval])
       end
       if options[:first_start_time] && options[:first_start_time] != other_job.run_at
-        logger.info "    Setting start time to #{options[:first_start_time]}"
+        logger.info "    Updating start time to #{options[:first_start_time]}"
 
         other_job.run_at = options[:first_start_time]
         other_job.save
@@ -71,22 +67,23 @@ class RecurringJob < Struct.new(:options )
     return recurring_job  # true if there was a job to unschedule
   end
 
-  def self.in_queue_or_running?(queue)
-    # is this job currently in progress?
-    # (the job is out of the queue when it's done.)
-    queue ||= default_queue
-    job = Delayed::Job.find_by(queue:queue)
-    logger.debug("Checking #{queue}: #{job.inspect}")
-    job
-  end
 
   def self.queue_once(options = {})
-    # just run this add the queue to run one time only (not scheduled)
+    # just run this to add the queue to run one time only (not scheduled)
     # IMPORTANT: don't put in same queue name as recurring job and DON'T specify an interval in the options!
     # Can use the queue field, but do not use the job name!
     queue = options[:queue]
     raise "Can't run Recurring Job once in queue: #{default_queue}" if queue == default_queue
     Delayed::Job.enqueue(self.new(options), :queue => queue)
+  end
+
+  def self.in_queue_or_running?(queue)
+    # is this job currently in progress?
+    # will return false if the job is already done
+    # (the job is out of the queue when it's done.)
+    queue ||= default_queue
+    job = Delayed::Job.find_by(queue:queue)
+    job
   end
 
   def self.default_interval
@@ -107,16 +104,9 @@ class RecurringJob < Struct.new(:options )
       conditions << this_job.id
     end
 
-    Delayed::Job.where(conditions).first  #?? failed_at:nil
+    Delayed::Job.where(conditions).first
   end
 
-  def self.job_interval(job)
-    # given a job from the queue
-    # parse the handler yaml and give back the current interval
-    # nil means no interval set
-    y = YAML.load(job.handler)
-    y.options && y.options[:interval].to_i
-  end
 
   def self.running?(queue=nil)
     # is this job currently running?
@@ -140,6 +130,20 @@ class RecurringJob < Struct.new(:options )
     y.options[option] = value
     job.handler = y.to_yaml
     job.save!
+  end
+
+  def self.get_option(job, option)
+    # given a job from the queue,
+    # parse the handler yaml and return options[option]
+    y = YAML.load(job.handler)
+    y.options && y.options[option]
+  end
+
+  def self.job_interval(job)
+    # given a job from the queue
+    # parse the handler yaml and give back the current interval
+    # nil means no interval set
+    get_option(job, :interval)
   end
 
   def self.set_job_interval(job, interval)
@@ -166,18 +170,14 @@ class RecurringJob < Struct.new(:options )
     job_list
   end
 
-  def enqueue(job)
-    # when this job is put in the queue,
-  end
-
   def perform
+    # should be overridden by real job to do the actual work!
     logger.debug("PERFORMING #{self.class.name} - #{options}")
-    # should be overridden by real job.
   end
 
   def before(job)
     # Always send in the job_id so that the RecurringJob can use it if it needs it.
-    # (during perform we don't have access to "job")
+    # (during perform we otherwise don't have access to "job")
     options[:delayed_job_id] = job.id.to_s
   end
 
@@ -187,10 +187,9 @@ class RecurringJob < Struct.new(:options )
     if options[:interval]
       #  if an interval was specified, make sure there's a future job using the same options as before.
       #  Otherwise, this is a one time run so don't reschedule.
-      options.delete(:delayed_job_id) # don't pass on the delayed job id
+      options.delete(:delayed_job_id) # don't pass on the previous delayed job id
       # logger.debug("Scheduling again: #{options.inspect}")
       self.class.schedule_job(options, job)
     end
   end
-
 end

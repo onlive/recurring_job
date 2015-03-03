@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.version       = RecurringJob::VERSION
   spec.authors       = ["Ruth Helfinstein"]
   spec.email         = ["ruth.helfinstein@onlive.com"]
-  spec.summary       = %q{Schedule DelayedJob tasks repeat after a given interval.}
+  spec.summary       = %q{Schedule DelayedJob tasks to repeat after a given interval.}
   spec.description   = %q{}
   spec.homepage      = ""
   spec.license       = "MIT"

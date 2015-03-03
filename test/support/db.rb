@@ -1,3 +1,8 @@
+# Copyright (C) 2015 OL2, Inc. All Rights Reserved.
+
+# set up database just for testing. When using the gem, users will set up
+# the database structure when setting up delayed job to work with their code and
+# we use that same database.
 ActiveRecord::Base.establish_connection :adapter => 'sqlite3', :database => ':memory:'
 
 # set up the DelayedJob schema in our test database

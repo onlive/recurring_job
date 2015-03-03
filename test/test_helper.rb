@@ -22,17 +22,8 @@ RecurringJob.logger = Logger.new('tmp/rj_test.log')
 ENV['RAILS_ENV'] = 'test'
 
 
-# Trigger AR to initialize
-# #ActiveRecord::Base # rubocop:disable Void
-#
-# # Add this directory so the ActiveSupport autoloading works
-# ActiveSupport::Dependencies.autoload_paths << File.dirname(__FILE__)
 ActiveSupport::TestCase.test_order = :random
-#
-# # set up underlying db
 ActiveRecord::Base.logger = RecurringJob.logger
-# ActiveRecord::Migration.verbose = false
-
 ActiveSupport::LogSubscriber.colorize_logging = false
 
 
