@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2015 OL2, Inc. All Rights Reserved.
+# Copyright (C) 2014-2015 OL2, Inc. See LICENSE.txt for details.
 
 require 'test_helper'
 
@@ -40,7 +40,7 @@ class RecurringJobTest < ActiveSupport::TestCase
     job = MyRecurringJob.schedule_job({interval:1, action: :perform, first_start_time: Time.now})
     # now this job is scheduled
     assert_equal(job, MyRecurringJob.next_scheduled_job)
-    assert_equal(Delayed::Job.all, [job])
+    assert_equal(RecurringJob.all, [job])
     # now run the job from the queue
     Delayed::Worker.new.work_off
 
@@ -62,48 +62,48 @@ class RecurringJobTest < ActiveSupport::TestCase
     job = MyRecurringJob.schedule_job({interval:1, action: :error})
 
     # make sure the jobs will run now
-    Delayed::Job.all.each do |j|
+    RecurringJob.all.each do |j|
       j.run_at = Time.now
       j.save!
     end
     # run job, will fail
     worker.work_off
-    Delayed::Job.all.each do |j|
+    RecurringJob.all.each do |j|
       j.run_at = Time.now
       j.save!
     end
 
     # there should now be two jobs in the queue
     # since it adds the next job even if there's an error
-    assert_equal(2,Delayed::Job.all.size, "Should be the new job in the queue")
-    jobs = Delayed::Job.all
+    assert_equal(2,RecurringJob.all.size, "Should be the new job in the queue")
+    jobs = RecurringJob.all
     # they should both run this time and both get errors
     worker.work_off
 
-    Delayed::Job.all.each do |j|
+    RecurringJob.all.each do |j|
       j.run_at = Time.now
       j.save!
     end
 
-    assert_equal(jobs, Delayed::Job.all)
+    assert_equal(jobs, RecurringJob.all)
     # There should still only be the same two jobs in the queue.
-    assert_equal(2,Delayed::Job.all.size)
+    assert_equal(2,RecurringJob.all.size)
 
     worker.work_off
     # it's been 3 attempts so original job should be deleted
 
-    Delayed::Job.all.each do |j|
+    RecurringJob.all.each do |j|
       j.run_at = Time.now
       j.save!
     end
 
-    refute_includes(Delayed::Job.all, job)
+    refute_includes(RecurringJob.all, job)
 
     # The second job will fail a third time and get deleted, but make sure it puts a new job in the
     # queue before it does (to show we will always have at least one job in the queue)
     worker.work_off
 
-    refute_empty(Delayed::Job.all)
+    refute_empty(RecurringJob.all)
 
   end
 
@@ -189,11 +189,11 @@ class RecurringJobTest < ActiveSupport::TestCase
 
   def test_job_id
     # make sure the delayed job id is available to the job.
-    assert_empty(Delayed::Job.all)
+    assert_empty(RecurringJob.all)
 
     RecurringJobTest.last_job_id = nil
     job = MyRecurringJob.schedule_job({interval:1, action: :test_id, first_start_time: Time.now})
-    assert_equal(Delayed::Job.all, [job])
+    assert_equal(RecurringJob.all, [job])
 
     refute(MyRecurringJob.get_option(job, :delayed_job_id))  # it's set only when the job is running
     assert_equal(:test_id, MyRecurringJob.get_option(job, :action))

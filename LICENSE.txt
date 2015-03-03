@@ -1,4 +1,4 @@
-Copyright (c) 2015 Ruth Helfinstein
+Copyright (c) 2013 OL2, Inc.
 
 MIT License
 

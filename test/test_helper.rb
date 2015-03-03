@@ -1,4 +1,4 @@
-# Copyright (C) 2013-2014 OL2, Inc. See LICENSE.txt for details.
+# Copyright (C) 2015 OL2, Inc. See LICENSE.txt for details.
 
 # Test local copy first
 $LOAD_PATH.unshift File.join(File.dirname(__FILE__), "..", "lib")

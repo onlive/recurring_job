@@ -1,3 +1,5 @@
+# Copyright (C) 2015 OL2, Inc. See LICENSE.txt for details.
+
 require "recurring_job"
 
 # because RecurringJob is a class that has a superclass,
@@ -6,4 +8,4 @@ require "recurring_job"
 #   VERSION = "0.0.1"
 # end
 
-RecurringJob::VERSION = "0.0.2"
+RecurringJob::VERSION = "0.0.3"

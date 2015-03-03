@@ -1,4 +1,4 @@
-# Copyright (C) 2014-2015 OL2, Inc. All Rights Reserved.
+# Copyright (C) 2014-2015 OL2, Inc. See LICENSE.txt for details.
 require 'active_record'
 require 'delayed_job_active_record'
 
@@ -154,7 +154,7 @@ class RecurringJob < Struct.new(:options )
   end
 
   def self.all
-    # just assume any job that uses a named queue is one of ours - not always true, but maybe close.
+    # Return all jobs with named queues (may get extra jobs if other jobs use named queues)
     Delayed::Job.all.where.not(queue:nil)
   end
 
@@ -172,17 +172,22 @@ class RecurringJob < Struct.new(:options )
 
   def perform
     # should be overridden by real job to do the actual work!
-    logger.debug("PERFORMING #{self.class.name} - #{options}")
+    # (don't call super for this...)
+    raise "Must override perform in #{self.class.name}"
   end
 
   def before(job)
-    # Always send in the job_id so that the RecurringJob can use it if it needs it.
+    # Remember to call super if you implement this hook in your own job!
+
+    # Send in the job_id so that the RecurringJob can use it if it needs it.
     # (during perform we otherwise don't have access to "job")
     options[:delayed_job_id] = job.id.to_s
   end
 
   def after(job)
-    # Always reschedule this job when we're done.  Whether there's an error in this run
+    # Remember to call super if you implement this hook in your own job!
+
+    # Reschedule this job when we're done.  Whether there's an error in this run
     # or not, we always want to reschedule if an interval was specified
     if options[:interval]
       #  if an interval was specified, make sure there's a future job using the same options as before.
@@ -192,4 +197,21 @@ class RecurringJob < Struct.new(:options )
       self.class.schedule_job(options, job)
     end
   end
+
+  def success(job)
+    # Remember to call super if you implement this hook in your own job!
+  end
+
+  def error(job, exception)
+    # Remember to call super if you implement this hook in your own job!
+  end
+
+  def failure(job)
+    # Remember to call super if you implement this hook in your own job!
+  end
+
+  def enqueue(job)
+    # Remember to call super if you implement this hook in your own job!
+  end
+
 end

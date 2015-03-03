@@ -1,4 +1,4 @@
-# Copyright (C) 2015 OL2, Inc. All Rights Reserved.
+# Copyright (C) 2015 OL2, Inc. See LICENSE.txt for details.
 
 # set up database just for testing. When using the gem, users will set up
 # the database structure when setting up delayed job to work with their code and
