@@ -6,4 +6,4 @@ require "recurring_job"
 #   VERSION = "0.0.1"
 # end
 
-RecurringJob::VERSION = "0.0.1"
+RecurringJob::VERSION = "0.0.2"

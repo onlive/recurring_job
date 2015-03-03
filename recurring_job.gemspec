@@ -20,12 +20,12 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'activesupport', ['>= 3.0', '< 5.0']
   spec.add_dependency 'activerecord', '>= 3.0', '< 5.0'
-  spec.add_dependency 'delayed_job_active_record', '~> 4.0.1'
-  spec.add_dependency 'sqlite3'
+  spec.add_dependency 'delayed_job_active_record', '~> 4.0'
 
   spec.add_development_dependency "bundler", "~> 1.6"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "minitest", "~> 5.2"
-  spec.add_development_dependency "rr"
+  spec.add_development_dependency "rr", '~> 1.1'
+  spec.add_development_dependency 'sqlite3', '~> 0'
 
 end
