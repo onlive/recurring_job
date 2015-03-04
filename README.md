@@ -112,7 +112,7 @@ RecurringJob.all
 
 ## Another example
 You might want to use RecurringJob to send emails in batches,
-for example if your email service has limits to the number of API calls per day or something. If you had
+for example if your email service has limits to the number of API calls per day, like iPost does. If you had
 a queue of pending emails in a table called pending_emails, it might look something like this (*all actual email
 details left as an exercise for the reader*).
 
@@ -121,7 +121,7 @@ class BatchEmailJob < RecurringJob
 
   def perform
     # send any pending emails
-    @email_status_hash = PendingEmail.send_all  # say it returns a hash of how many emails were sent, any failures, etc
+    @email_status_hash = PendingEmail.send_all  # returns a hash of # emails were sent, any failures, etc
   end
 
   def success(job)
