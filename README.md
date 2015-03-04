@@ -43,9 +43,6 @@ case we use for locking (Of course, you can also just ignore the job id if you d
 
 ```ruby
 class AppStatusJob < RecurringJob
-   # As a recurring job, we just provide the "perform" method to do the actual work
-   # We can add send in our own options (in this example an app_id for a database model named App)
-    # that will be passed on each time when the job is scheduled
 
   def perform
     return unless options
@@ -86,7 +83,7 @@ name of the app as the name of the queue
 
 ```ruby
 App.all.each do |app|
-  AppSyncJob.schedule_job(interval:1.hour, app_id:app.id, queue:app.name)
+  AppStatusJob.schedule_job(interval:1.hour, app_id:app.id, queue:app.name)
 end
 ```
 
