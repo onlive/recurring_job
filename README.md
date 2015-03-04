@@ -24,7 +24,6 @@ By default, RecurringJob logs to STDOUT. If you want it to log to your rails log
 (I use environment.rb)
 
 ```ruby
-# log RecurringJob output to the rails log
 RecurringJob.logger = Rails.logger
 ```
 
@@ -40,7 +39,7 @@ I like to put job classes in a `lib/jobs` folder in my rails app, but you're fre
 This example, which is similar to how we use RecurringJob at OnLive, shows how to subclass the RecurringJob class and provide a `perform` method that does the actual work.
 We can send in our own options (in this example an `app_id` for a database Model named App) and those will be passed on each
 time when the job is scheduled.  In addition we are automatically passed in the job id of the DelayedJob job, which in this
-case we use for locking.
+case we use for locking (Of course, you can also just ignore the job id if you don't need it!).
 
 ```ruby
 class AppStatusJob < RecurringJob
@@ -91,13 +90,46 @@ App.all.each do |app|
 end
 ```
 
-Because AppStatusJob has been set up as a RecurringJob, the scheduled jobs will automatically add themselves back into the
+Once AppStatusJob has been set up as a RecurringJob, the scheduled jobs will automatically add themselves back into the
 queue to run an hour after they finish (or whatever interval you choose), continuing indefinitely! And like all DelayedJobs,
-you can specify actions to happen when these jobs succeed, or fail, and they live in the DelayedJob queue between runs.
+you can specify actions to happen when these jobs succeed, or fail, and the jobs live in the DelayedJob queue between runs.
 (See more info about [DelayedJob hooks](https://github.com/collectiveidea/delayed_job#hooks)).
 
 **Important:** If you implement any of the DelayedJob hooks (`before`, `after`, `success`, `error`, `failure`, or `enqueue`) in your RecurringJob, you must call super to allow the RecurringJob hooks
 to do its work!
+
+## Another example
+Here is one way that RecurringJob could be used to send emails in batches,
+for example if your email service has limits to the number of API calls per day or something. If you had
+a queue of pending emails in a table called pending_emails, it might look something like this (*all actual email
+details left as an exercise for the reader*).
+
+```ruby
+class BatchEmailJob < RecurringJob
+
+  def perform
+    # send any pending emails
+    @email_status_hash = PendingEmail.send_all  # say it returns a hash of how many emails were sent, any failures, etc
+  end
+
+  def success(job)
+    super   # allow RecurringJob to do its work!!
+
+    notify_job_succeeded(@email_status_hash)
+  end
+
+  def max_attempts
+    3
+  end
+
+end
+```
+And then set it up to run as often as you want to send the emails, say every 5 hours.
+
+```ruby
+BatchEmailJob.schedule_job(interval:5.hours)
+```
+
 
 ## Contributing
 
