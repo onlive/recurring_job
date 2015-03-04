@@ -95,8 +95,23 @@ you can specify actions to happen when these jobs succeed, or fail, and the jobs
 **Important:** If you implement any of the DelayedJob hooks (`before`, `after`, `success`, `error`, `failure`, or `enqueue`) in your RecurringJob, you must call super to allow the RecurringJob hooks
 to do its work!
 
+## More info
+If you want to change the interval of a job, you can call schedule_job again and it will change the
+currently scheduled job.
+```ruby
+AppStatusJob.schedule_job(interval:30.minutes)
+```
+You can stop a job from running anymore by taking it out of the queue
+```ruby
+AppStatusJob.unschedule_job
+```
+To get a list of all the RecurringJobs you have scheduled
+```ruby
+RecurringJob.all
+```
+
 ## Another example
-Here is one way that RecurringJob could be used to send emails in batches,
+You might want to use RecurringJob to send emails in batches,
 for example if your email service has limits to the number of API calls per day or something. If you had
 a queue of pending emails in a table called pending_emails, it might look something like this (*all actual email
 details left as an exercise for the reader*).
