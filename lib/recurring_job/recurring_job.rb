@@ -2,7 +2,11 @@
 require 'active_record'
 require 'delayed_job_active_record'
 
-class RecurringJob < Struct.new(:options )
+require "recurring_job/class_decl"
+
+# Class declaration in recurring_job/class_decl gives the parent class,
+# which is a new Struct().
+class RecurringJob
   # (parts inspired by https://gist.github.com/JoshMcKin/1648242)
 
   def self.logger=(new_logger)
