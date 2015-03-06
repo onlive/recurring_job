@@ -45,7 +45,6 @@ case we use for locking (Of course, you can also just ignore the job id if you d
 class AppStatusJob < RecurringJob
 
   def perform
-    return unless options
     app_id = options[:app_id]
     recurring_job_id = options[:delayed_job_id]
 
@@ -62,7 +61,7 @@ class AppStatusJob < RecurringJob
 
   def after(job)
     super   # have to allow RecurringJob to do its work!!
-    send_email_about_job_success(job)
+    send_email_about_job_success
   end
 
 end
@@ -128,10 +127,6 @@ class BatchEmailJob < RecurringJob
     super   # allow RecurringJob to do its work!!
 
     notify_job_succeeded(@email_status_hash)
-  end
-
-  def max_attempts
-    3
   end
 
 end

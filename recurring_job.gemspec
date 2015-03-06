@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["ruth.helfinstein@onlive.com", "noah@onlive.com"]
   spec.summary       = %q{Schedule DelayedJob tasks to repeat after a given interval.}
   spec.description   = <<DESC
-Recurring_job creates a framework for creating custom DelayedJob jobs
+Recurring_job is a framework for creating custom DelayedJob jobs
 that are automatically rescheduled to run again at a given interval.
 DESC
   spec.homepage      = ""

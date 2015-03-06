@@ -11,9 +11,6 @@ class RecurringJobTest < ActiveSupport::TestCase
       case options[:action]
         when :error
           raise 'FAILING'
-        when :delay
-          logger.debug("Sleeping")
-          sleep(5)
         when :test_id
           logger.debug("Job id is #{options[:delayed_job_id]}")
           RecurringJobTest.last_job_id = options[:delayed_job_id]
